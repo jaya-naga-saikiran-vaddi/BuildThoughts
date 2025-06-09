@@ -1,0 +1,3 @@
+openai
+schedule
+python-dotenv
