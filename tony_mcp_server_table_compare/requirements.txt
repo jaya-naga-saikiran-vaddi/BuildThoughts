@@ -1,0 +1,11 @@
+fastapi~=0.115.12
+uvicorn
+mysql-connector-python~=9.3.0
+psycopg2-binary
+pandas~=2.2.2
+streamlit~=1.45.1
+langchain~=0.1.20
+openai
+pydantic~=2.11.4
+python-dotenv~=1.0.1
+requests~=2.32.3

@@ -1,0 +1,1 @@
+OPENAI_API_KEY = "open_api_key"

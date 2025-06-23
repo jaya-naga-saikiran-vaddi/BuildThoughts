@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Health Entries</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='healthinfo.css') }}">
+
+</head>
+<body>
+
+<h1> All Health Entries</h1>
+
+<button class="back-btn" onclick="window.location.href='/'"> Back to Dashboard</button>
+
+<table id="entriesTable">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Water</th>
+        <th>Sleep</th>
+        <th>Steps</th>
+        <th>Calories</th>
+        <th>Mood</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+async function loadEntries() {
+    try {
+        const res = await fetch("/entries");
+        if (!res.ok) throw new Error("Failed to fetch entries");
+
+        const data = await res.json();
+        const table = document.querySelector("#entriesTable tbody");
+        table.innerHTML = "";
+
+        if (data.length === 0) {
+            table.innerHTML = "<tr><td cols pan='7'>No entries available</td></tr>";
+            return;
+        }
+
+        data.forEach(entry => {
+            table.innerHTML += `
+                <tr>
+                    <td>${entry.log_date}</td>
+                    <td>${entry.water_liters}</td>
+                    <td>${entry.sleep_hours}</td>
+                    <td>${entry.steps_walked}</td>
+                    <td>${entry.calories}</td>
+                    <td>${entry.mood}</td>
+                    <td><button onclick="deleteEntry('${entry.log_date}')">🗑 Delete</button></td>
+                </tr>`;
+        });
+    } catch (error) {
+        console.error("Error loading entries:", error);
+    }
+}
+
+loadEntries();
+</script>
+
+</body>
+</html>

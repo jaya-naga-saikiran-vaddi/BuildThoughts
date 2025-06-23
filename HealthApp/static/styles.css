@@ -1,0 +1,139 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f4f8;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.dashboard-container {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.form-section {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-section input,
+.form-section button {
+  width: 100%;
+  padding: 8px;
+  margin-top: 6px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.form-section button {
+  background-color: #007acc;
+  color: white;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.form-section button:hover {
+  background-color: #005fa3;
+}
+
+.table-section {
+  flex-grow: 1;
+  overflow-x: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 800px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead {
+  background-color: #007acc;
+  color: white;
+}
+
+td, th {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+  body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f9fc;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .notification {
+            display: none;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            padding: 10px;
+            margin: 15px 0;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        .dashboard-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .form-section, .graph-section {
+            flex: 1;
+        }
+
+        .form-section {
+            max-width: 400px;
+        }
+
+        form p {
+            margin: 10px 0;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 6px 12px;
+            border: none;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 0 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .summary-container {
+            margin: 20px 0;
+        }
+

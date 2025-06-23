@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Personal Health Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<h1>Personal Health Dashboard</h1>
+
+<div class="button-container">
+    <button onclick="window.location.href='/entries/all'"> Show All Entries</button>
+    <button id="getAdviceBtn">Get AI Health Advice</button>
+
+<div id="adviceContainer" style="margin-top: 20px; font-weight: bold; color: #007BFF;"></div>
+</div>
+
+<div id="notification" class="notification"></div>
+
+<div class="dashboard-container">
+
+    <div class="form-section">
+        <form id="healthForm">
+            <p><label>Date:</label><input type="date" name="log_date" required/></p>
+            <p><label>Water (L):</label><input type="number" step="0.1" name="water_liters" required/></p>
+            <p><label>Sleep (hrs):</label><input type="number" step="0.1" name="sleep_hours" required/></p>
+            <p><label>Steps Walked:</label><input type="number" name="steps_walked" required/></p>
+            <p><label>Calories:</label><input type="number" name="calories" required/></p>
+            <p><label>Mood:</label><input type="text" name="mood" required/></p>
+            <p>
+                <button type="submit">➕ Add Health Stats</button>
+            </p>
+        </form>
+    </div>
+
+    <div class="graph-section">
+        <div class="summary-container">
+            <h3> Last 5 Days Summary</h3>
+            <canvas id="summaryChart" width="400" height="250"></canvas>
+        </div>
+    </div>
+</div>
+
+<div id="adviceModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2> Personalized Health Advice</h2>
+    <div id="modalAdviceText" style="white-space: pre-line;"></div>
+  </div>
+</div>
+
+
+<script>
+    document.getElementById("healthForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const body = Object.fromEntries(formData.entries());
+
+        try {
+            const res = await fetch("/entries", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(body)
+            });
+
+            const result = await res.json();
+
+            if (!res.ok) {
+                showNotification(result.error || "Error occurred", true);
+                return;
+            }
+
+            showNotification(" Entry added successfully!");
+            e.target.reset();
+            loadSummary();
+        } catch (err) {
+            showNotification(" Network or server error", true);
+        }
+    });
+
+    async function deleteEntry(date) {
+        try {
+            const res = await fetch(`/entries/${date}`, {method: "DELETE"});
+            const result = await res.json();
+
+            if (!res.ok) {
+                showNotification(result.error || "Failed to delete entry", true);
+                return;
+            }
+
+            showNotification("🗑 Entry deleted successfully!");
+            loadSummary();
+        } catch (err) {
+            showNotification(" Network or server error", true);
+        }
+    }
+
+    function showNotification(message, isError = false) {
+        const note = document.getElementById("notification");
+        note.innerText = message;
+        note.style.display = "block";
+        note.style.backgroundColor = isError ? "#ff4d4d" : "#4BB543";
+
+        setTimeout(() => {
+            note.style.display = "none";
+        }, 3000);
+    }
+
+    async function loadSummary() {
+
+        const res = await fetch("/entries/health/info/summary");
+        if (!res.ok) {
+            showNotification("Failed to load summary", true);
+            return;
+        }
+        const data = await res.json();
+
+        const labels = data.map(item => item.log_date);
+        const water = data.map(item => item.avg_water);
+        const sleep = data.map(item => item.avg_sleep);
+        const steps = data.map(item => item.avg_steps);
+        const calories = data.map(item => item.avg_calories);
+
+        const ctx = document.getElementById("summaryChart").getContext("2d");
+        if (window.summaryChartInstance) {
+            window.summaryChartInstance.destroy();
+        }
+
+        window.summaryChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Water (L)',
+                        data: water,
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Sleep (hrs)',
+                        data: sleep,
+                        backgroundColor: 'rgba(255, 206, 86, 0.6)',
+                        borderColor: 'rgba(255, 206, 86, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Steps',
+                        data: steps,
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Calories',
+                        data: calories,
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: {
+                        display: true,
+                        text: 'Summary of Last 5 Days (Column Chart)'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Values' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Date' }
+                    }
+                }
+            }
+        });
+    }
+
+    loadSummary();
+document.getElementById('getAdviceBtn').addEventListener('click', async () => {
+  const modal = document.getElementById('adviceModal');
+  const modalContent = document.getElementById('modalAdviceText');
+  modalContent.textContent = "⏳ Loading personalized health advice...";
+
+  try {
+    const response = await fetch('/entries/health/ai/advice');
+    if (!response.ok) throw new Error("Failed to fetch advice");
+
+    const data = await response.json();
+    modalContent.textContent = data.advice || "No advice available.";
+    modal.style.display = "block";
+  } catch (error) {
+    modalContent.textContent = "❌ Error fetching advice.";
+    console.error(error);
+    modal.style.display = "block";
+  }
+});
+
+document.querySelector(".close").onclick = function () {
+  document.getElementById("adviceModal").style.display = "none";
+};
+
+window.onclick = function (event) {
+  const modal = document.getElementById("adviceModal");
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+};
+
+
+</script>
+
+
+
+</body>
+</html>
