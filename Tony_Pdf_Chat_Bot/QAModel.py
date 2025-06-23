@@ -6,9 +6,26 @@ from langchain_core.prompts import PromptTemplate
 class QAModel:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.prompt_template = """You are a helpful assistant answering questions based on the provided PDF document. 
-        Use only the following context to answer the question. If the answer is not in the context, say so clearly. 
-        Context: {context} Question: {question} Answer:"""
+        self.prompt_template = """
+        You are a helpful and intelligent assistant. Use the following context extracted from a PDF document to answer the user's question.
+        Only use the given context — do not hallucinate facts.
+
+        You can perform a variety of tasks based on the question, such as:
+        - Answering direct questions ,Extracting data into table form
+        - Generating SQL schemas and inserts ,Creating summaries or lists
+        - Finding insights or comparisons
+        If the user asks for a table or SQL, generate structured output accordingly.
+        If the answer is not found in the context, clearly say: "I couldn't find that information in the PDF."
+
+        Context:
+        {context}
+
+        Question:
+        {question}
+
+        Answer:
+        """
+
         self.prompt = PromptTemplate(template=self.prompt_template, input_variables=["context", "question"])
         self.llm = ChatOpenAI(
             openai_api_key=self.api_key,
