@@ -15,12 +15,12 @@ def formatResponse(text):
     return formatted_text.strip()
 
 
-def handleUserInput(qa_chain):
-    user_question = st.text_input("Ask something about your PDF:")
+def handleUserInput(qa_model, retriever, chunks):
+    user_question = st.chat_input("Ask a question about the PDF")
     if user_question:
+        response = qa_model.ask(retriever, chunks, user_question)
         st.session_state.chat_history.append({"role": "user", "content": user_question})
-        response = qa_chain.run(user_question)
-        st.session_state.chat_history.append({"role": "bot", "content": response})
+        st.session_state.chat_history.append({"role": "assistant", "content": response})
 
 
 class ChatInterface:

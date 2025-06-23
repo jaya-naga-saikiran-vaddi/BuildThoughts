@@ -1,7 +1,7 @@
 import Constants
 from ChatInterface import ChatInterface, setupSidebar, handleUserInput
 from PDFProcessor import PDFProcessor
-from QAModel import QAModel
+from mcpModel import mcpModel
 from VectorStoreManager import VectorStoreManager
 import streamlit as st
 
@@ -19,11 +19,10 @@ def main():
             vector_store_manager = VectorStoreManager(Constants.OPENAI_API_KEY)
             vector_store_manager.createVectorStore(pdf_processor.chunks)
 
-            qa_model = QAModel(Constants.OPENAI_API_KEY)
+            qa_model = mcpModel(Constants.OPENAI_API_KEY)
             retriever = vector_store_manager.getRetriever()
-            qa_chain = qa_model.createQaChain(retriever)
 
-            handleUserInput(qa_chain)
+            handleUserInput(qa_model, retriever, pdf_processor.chunks)
             chat_interface.displayChat()
 
         except Exception as e:
