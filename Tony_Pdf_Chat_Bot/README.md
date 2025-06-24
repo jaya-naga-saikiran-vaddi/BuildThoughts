@@ -1,5 +1,8 @@
 # Build_Thoughts_Pdf_Chat_bot
 
+![TonyPdfChatBot](https://github.com/user-attachments/assets/d6233f37-78be-4fa4-a2f8-39ebb9a6e83f)
+
+
 # 📄 PDF Chatbot with RAG (Retrieval-Augmented Generation)
 
 This project lets you **chat with a PDF** using natural language. Users upload a PDF, ask questions, and receive intelligent responses based on the content — all powered by **LangChain**, **OpenAI**, **FAISS**, and **Streamlit**.
